@@ -193,7 +193,7 @@ void get_data(t_list **list1, t_list **list2, char *str)
     data = split(str, ' ');
     t1 = *list1;
     t2 = *list2;
-    for (int i = 0; data[i + 1]; i++)
+    for (int i = 0; data[i] && data[i + 1]; i += 2)
     {
         int val1 = atoi(data[i]);
         int val2 = atoi(data[i + 1]);
@@ -207,6 +207,28 @@ void get_data(t_list **list1, t_list **list2, char *str)
     free_data(data);
 }
 
+int find_smallest_and_delete(t_list **list)
+{
+    t_list *tmp;
+    t_list *tmp2;
+    int s;
+
+    tmp = *list;
+    s = tmp->num;
+    tmp = tmp->next;
+    while (tmp)
+    {
+        if (s < tmp->num)
+            s = tmp->num;
+        tmp = tmp->next;
+    }
+    tmp = *list;
+    while (tmp->next->num != s)
+        tmp = tmp->next;
+    tmp2 = tmp->next->next;
+    free(tmp->next);
+}
+
 int main(void)
 {
     t_list  *list1;
@@ -216,6 +238,11 @@ int main(void)
     list1 = NULL;
     list2 = NULL;
     get_data(&list1, &list2, buf);
-
+	printf("List 1 is: \n");
+	for (t_list *tmp = list1; tmp; tmp = tmp->next)
+		printf("%d\n", tmp->num);
+	printf("List 2 is: \n");
+	for (t_list *tmp = list2; tmp; tmp = tmp->next)
+		printf("%d\n", tmp->num);
     return (0);
 }
