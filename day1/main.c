@@ -128,7 +128,7 @@ char *parse_data()
         exit(1);
     }
     size = lseek(fd, 0, SEEK_END);
-    buf = malloc(sizeof(char) * size + 1);
+    buf = malloc(sizeof(char) * (size + 1));
     lseek(fd, 0, SEEK_SET);
     b_read = read(fd, buf, size);
     if (b_read == -1)
@@ -201,48 +201,74 @@ void get_data(t_list **list1, t_list **list2, char *str)
         t2 = new_list(val2);
         add_back_list(list1, t1);
         add_back_list(list2, t2);
-        t1 = t1->next;
-        t2 = t2->next;
     }
     free_data(data);
 }
 
 int find_smallest_and_delete(t_list **list)
 {
+	if (*list == NULL)
+		return (0);
     t_list *tmp;
-    t_list *tmp2;
+    t_list *prev;
+    t_list *smallest_prev;
+    t_list *smallest;
     int s;
 
     tmp = *list;
-    s = tmp->num;
-    tmp = tmp->next;
+    smallest = tmp;
+    smallest_prev = NULL;
+    prev = NULL;
     while (tmp)
     {
-        if (s < tmp->num)
-            s = tmp->num;
+        if (tmp->num < smallest->num)
+        {
+            smallest = tmp;
+            smallest_prev = prev;
+        }
+        prev = tmp;
         tmp = tmp->next;
     }
-    tmp = *list;
-    while (tmp->next->num != s)
-        tmp = tmp->next;
-    tmp2 = tmp->next->next;
-    free(tmp->next);
+    if (smallest_prev == NULL)
+        *list = smallest->next;
+    else
+        smallest_prev->next = smallest->next;
+    s = smallest->num;
+    free(smallest);
+    return s;
+}
+
+int	calculate_distance(t_list **list1, t_list **list2)
+{
+	int	dis[4096] = {0};
+	int	i;
+	int	res = 0;
+
+	i = 0;
+	while (*list1 != NULL && *list2 != NULL)
+	{
+		int l1 = (*list1 != NULL) ? find_smallest_and_delete(list1) : 0;
+		int l2 = (*list2 != NULL) ? find_smallest_and_delete(list2) : 0;
+		dis[i] = abs(l1 - l2);
+		i++;
+	}
+	for (int j = 0; j < i; j++)
+		res += dis[j];
+	return (res);
 }
 
 int main(void)
 {
     t_list  *list1;
     t_list  *list2;
+	int		res;
 
     char *buf = parse_data();
     list1 = NULL;
     list2 = NULL;
     get_data(&list1, &list2, buf);
-	printf("List 1 is: \n");
-	for (t_list *tmp = list1; tmp; tmp = tmp->next)
-		printf("%d\n", tmp->num);
-	printf("List 2 is: \n");
-	for (t_list *tmp = list2; tmp; tmp = tmp->next)
-		printf("%d\n", tmp->num);
+	res = calculate_distance(&list1, &list2);
+	free(buf);
+	printf("Result is: %d\n", res);
     return (0);
 }
