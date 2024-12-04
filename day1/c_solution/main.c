@@ -121,7 +121,7 @@ char *parse_data()
     int b_read;
     char *buf;
 
-    fd = open("data.txt", O_RDONLY);
+    fd = open("../js_solution/data.txt", O_RDONLY);
     if (fd == -1)
     {
         perror("open");
