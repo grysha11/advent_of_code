@@ -33,8 +33,8 @@ function processData(data) {
     console.log(list2);
 }
 
-Array.prototype.peek = function() {
-    return this[this.length - 1];
+function peek(list) {
+    return list[list.length - 1];
 }
 
 function calculateSimilarity (list1, list2) {
